@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$Input
+    [string]$File
 )
 
 $repo = "https://github.com/developerstriker/XFuscator/archive/refs/heads/main.zip"
@@ -15,22 +15,27 @@ Invoke-WebRequest $repo -OutFile $zip
 
 Expand-Archive $zip -DestinationPath $temp
 
-$root = Get-ChildItem $temp -Directory | Select-Object -First 1
+# Procura o XFuscator.lua em qualquer subpasta
+$xfuscator = Get-ChildItem $temp -Recurse -Filter XFuscator.lua | Select-Object -First 1
 
-Push-Location $root.FullName
+if (-not $xfuscator) {
+    throw "XFuscator.lua não encontrado."
+}
 
-lua XFuscator.lua $Input
+Push-Location $xfuscator.Directory.FullName
+
+lua $xfuscator.FullName $File
 
 Pop-Location
 
-$output = Join-Path $root.FullName (
-    (Split-Path $Input -LeafBase) + " [Obfuscated].lua"
+$output = Join-Path $xfuscator.Directory.FullName (
+    (Split-Path $File -LeafBase) + " [Obfuscated].lua"
 )
 
 if (Test-Path $output) {
-    Copy-Item $output (Split-Path $Input)
-    Write-Host "`nConcluído!"
+    Copy-Item $output (Split-Path $File -Parent) -Force
+    Write-Host "Concluído!"
 }
 
-Remove-Item $zip -Force
-Remove-Item $temp -Recurse -Force
+Remove-Item $zip -Force -ErrorAction SilentlyContinue
+Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue
