@@ -3,7 +3,7 @@ param(
     [string]$Input
 )
 
-$repo = "https://github.com/SEU_USUARIO/XFuscator/archive/refs/heads/main.zip"
+$repo = "https://github.com/developerstriker/XFuscator/archive/refs/heads/main.zip"
 
 $temp = Join-Path $env:TEMP ("XFuscator_" + [guid]::NewGuid())
 $zip = "$temp.zip"
