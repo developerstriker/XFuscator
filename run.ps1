@@ -19,7 +19,7 @@ Expand-Archive $zip -DestinationPath $temp
 $xfuscator = Get-ChildItem $temp -Recurse -Filter XFuscator.lua | Select-Object -First 1
 
 if (-not $xfuscator) {
-    throw "XFuscator.lua não encontrado."
+    throw "XFuscator.lua nï¿½o encontrado."
 }
 
 Push-Location $xfuscator.Directory.FullName
@@ -29,12 +29,13 @@ lua $xfuscator.FullName $File
 Pop-Location
 
 $output = Join-Path $xfuscator.Directory.FullName (
-    (Split-Path $File -LeafBase) + " [Obfuscated].lua"
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($File)
+    $output = Join-Path $xf.Directory.FullName "$name [Obfuscated].lua"
 )
 
 if (Test-Path $output) {
     Copy-Item $output (Split-Path $File -Parent) -Force
-    Write-Host "Concluído!"
+    Write-Host "Concluï¿½do!"
 }
 
 Remove-Item $zip -Force -ErrorAction SilentlyContinue
