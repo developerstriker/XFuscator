@@ -12,30 +12,36 @@ New-Item -ItemType Directory -Force -Path $temp | Out-Null
 
 Write-Host "Baixando XFuscator..."
 Invoke-WebRequest $repo -OutFile $zip
-
 Expand-Archive $zip -DestinationPath $temp
 
-# Procura o XFuscator.lua em qualquer subpasta
 $xfuscator = Get-ChildItem $temp -Recurse -Filter XFuscator.lua | Select-Object -First 1
 
 if (-not $xfuscator) {
-    throw "XFuscator.lua n�o encontrado."
+    throw "XFuscator.lua não encontrado."
 }
+
+# Caminho absoluto do arquivo de entrada
+$File = (Resolve-Path $File).Path
+
+# Usa o Lua 5.4 (último encontrado no PATH)
+$lua = (where.exe lua | Select-Object -Last 1)
 
 Push-Location $xfuscator.Directory.FullName
 
-lua $xfuscator.FullName $File
+& $lua $xfuscator.FullName $File
 
 Pop-Location
 
-$output = Join-Path $xfuscator.Directory.FullName (
-    $name = [System.IO.Path]::GetFileNameWithoutExtension($File)
-    $output = Join-Path $xf.Directory.FullName "$name [Obfuscated].lua"
-)
+$name = [System.IO.Path]::GetFileNameWithoutExtension($File)
+$dest = Split-Path $File -Parent
+
+$output = Join-Path $xfuscator.Directory.FullName "$name [Obfuscated].lua"
 
 if (Test-Path $output) {
-    Copy-Item $output (Split-Path $File -Parent) -Force
-    Write-Host "Conclu�do!"
+    Copy-Item $output $dest -Force
+    Write-Host "Concluído!"
+} else {
+    Write-Host "O arquivo obfuscado não foi gerado."
 }
 
 Remove-Item $zip -Force -ErrorAction SilentlyContinue
