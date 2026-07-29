@@ -21,7 +21,11 @@ if (-not $xfuscator) {
 }
 
 # Caminho absoluto do arquivo de entrada
-$File = (Resolve-Path $File).Path
+if (-not [System.IO.Path]::IsPathRooted($File)) {
+    $File = Join-Path (Get-Location) $File
+}
+
+$File = [System.IO.Path]::GetFullPath($File)
 
 # Usa o Lua 5.4 (último encontrado no PATH)
 $lua = (where.exe lua | Select-Object -Last 1)
