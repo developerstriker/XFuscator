@@ -9,7 +9,7 @@ ____ = { function(...) local t = { ...} return ____[8](t) end, print, game, math
 ]] .. GenerateFluff() .. [[local ___ = ____[5]
 ]] .. GenerateFluff() .. [[local _ = function(x) return string.char(x / ___) end
 ]] .. GenerateFluff() .. [[local __ = {]]
-    math.randomseed(__X)
+    math.randomseed(os.time())
     local ___X = math.random(1, 1100)
     local a3 = { }
     

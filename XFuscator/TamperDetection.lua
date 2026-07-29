@@ -1,3 +1,7 @@
+if not loadstring then
+    loadstring = load
+end
+
 local shaCode = [==[
 
 -- SHA-256 code in Lua 5.2; based on the pseudo-code from
