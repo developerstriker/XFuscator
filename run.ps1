@@ -1,3 +1,5 @@
+$File = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $File))
+
 param(
     [Parameter(Mandatory = $true)]
     [string]$File
@@ -28,9 +30,11 @@ if (-not [System.IO.Path]::IsPathRooted($File)) {
 $File = [System.IO.Path]::GetFullPath($File)
 
 # Usa o Lua 5.4 (último encontrado no PATH)
-$lua = (where.exe lua | Select-Object -Last 1)
+$lua = Join-Path $xfuscator.Directory.FullName "lua\lua.exe"
 
-Push-Location $xfuscator.Directory.FullName
+if (!(Test-Path $lua)) {
+    throw "lua.exe não encontrado."
+}
 
 & $lua $xfuscator.FullName $File
 
